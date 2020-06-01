@@ -1,7 +1,7 @@
 from sys import exit
 from time import sleep
-
-import matplotlib.pyplot as plt
+from math import floor
+#import matplotlib.pyplot as plt
 import numpy as np
 import serial
 import serial.tools.list_ports
@@ -18,7 +18,10 @@ drone_board = MultiWii()
 
 def REPL():
 	while True:
-		print(eval(input("Python >")))
+		try:
+			print(eval(input("Python >")))
+		except Exception as e:
+			print(str(e))
 def initialize(portArduino, portMSP):
 	try:
 		arduino.connect(portArduino,115200)
@@ -35,6 +38,7 @@ def main():
 		print('Puerto disponible: '+port.device)
 	initialize(input("Puerto arduino: "), input("Puerto MSP: "))
 	#REPL
+	REPL()
 	# if(test1()):
 	# 	print("SUCCESS")
 		# data = np.load("log-test1.npy")
@@ -52,7 +56,7 @@ def test1(stepTime=1.0,step=20.0):
 	if(stepTime < 0.3):
 		print("Too Fast")
 		return False
-	ITERS = 1000/step
+	ITERS = floor(1000/step)
 	print("TEST WILL TAKE {} TIME WITH MOTOR OPERATING, BE CAREFUL.".format(ITERS*stepTime))
 	data = np.empty([ITERS,2],dtype=np.half)
 	for iteration in range(ITERS):
@@ -60,11 +64,14 @@ def test1(stepTime=1.0,step=20.0):
 			motorSet(2,1000+(step*iteration))
 			sleep(stepTime/2.0)
 			data[iteration] = query()
+			print("{}: {}".format(iteration+1,data[iteration]))
 			sleep(stepTime/2.0)
 		except (Exception,KeyboardInterrupt):
+			print(str(e))
 			print("QUITING SAFELY")
+			drone_board.setMotors([1000,1000,1000,1000,0,0,0,0])
 			drone_board.disconnect()
-			arduino.exit()
+			arduino.disconnect()
 			return False
 	print("QUITING BOARD SAFELY")
 	drone_board.setMotors([1000,1000,1000,1000,0,0,0,0])
@@ -82,7 +89,7 @@ def query():
 	return (thrust,current)
 def motorSet(motor_number,val):
 	arr = [1000,1000,1000,1000,0,0,0,0]
-	arr[motor_number-1] = val
+	arr[motor_number-1] = floor(val)
 	drone_board.setMotors(arr)
 	
 if __name__ == "__main__":

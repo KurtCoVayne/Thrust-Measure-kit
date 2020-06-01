@@ -1000,8 +1000,8 @@ class MultiWii(object):
 		return self._sendAndWait(self._MSPCOMMANDS.MSP_SET_MISC, data)
 
 	def setMotors(self,motors):
-		print("DONT USE THIS UNTIL FIX, AND SET AN ACCELERATE DAMPENER")
-		return
+		#print("DONT USE THIS UNTIL FIX, AND SET AN ACCELERATE DAMPENER")
+		#return
 		"""Let you specifiy motor's speed.
 
 		Args:
